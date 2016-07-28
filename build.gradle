@@ -1,0 +1,52 @@
+buildscript {
+    repositories {
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
+    }
+}
+
+group 'org.syaku'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-idea'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+ext { }
+
+ext.slf4jVersion = '1.7.12'
+ext.junitVersion = '4.9'
+ext.springVersion = '4.2.4.RELEASE'
+
+ext.ehcacheVersion = '2.10.2'
+
+configurations.all {
+    exclude group: "commons-logging", module: "commons-logging"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+    runtime("ch.qos.logback:logback-classic:1.1.7") {
+        exclude group: 'org.slf4j', module: 'slf4j-api'
+    }
+
+    testCompile "junit:junit:${junitVersion}"
+
+    testCompile "org.springframework:spring-test:${springVersion}"
+
+    compile "org.springframework:spring-context:${springVersion}",
+            "org.springframework:spring-context-support:${springVersion}"
+
+    compile "net.sf.ehcache:ehcache:${ehcacheVersion}"
+}
