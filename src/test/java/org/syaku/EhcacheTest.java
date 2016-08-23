@@ -9,8 +9,6 @@ import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.syaku.config.CacheContext;
-import org.syaku.config.ConfigContext;
-import org.syaku.config.XmlCacheContext;
 import org.syaku.service.EhcacheAnnotationService;
 
 /**
@@ -19,7 +17,7 @@ import org.syaku.service.EhcacheAnnotationService;
  * @since 16. 7. 22.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { ConfigContext.class, CacheContext.class })
+@ContextConfiguration(classes = { CacheContext.class })
 public class EhcacheTest {
 
 	@Autowired private CacheManager cacheManager;

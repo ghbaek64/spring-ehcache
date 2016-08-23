@@ -10,7 +10,10 @@ import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.cache.interceptor.SimpleKeyGenerator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
@@ -20,9 +23,14 @@ import java.util.Properties;
  * @since 16. 7. 22.
  */
 @Configuration
+@ComponentScan(
+		basePackages = "org.syaku.service",
+		includeFilters =  {
+				@ComponentScan.Filter(type = FilterType.ANNOTATION, classes = Service.class)
+		}
+)
 @EnableCaching
 public class CacheContext implements CachingConfigurer {
-	@Autowired Properties config;
 
 	@Bean(destroyMethod="shutdown")
 	public net.sf.ehcache.CacheManager ehCacheManager() {
@@ -37,7 +45,12 @@ public class CacheContext implements CachingConfigurer {
 
 		return net.sf.ehcache.CacheManager.newInstance(config);
 		*/
-		return new EhcacheFactoryBean(config).getObject();
+		System.out.println("ewqewqewqewqewqe==================");
+		EhcacheFactoryBean bean = new EhcacheFactoryBean();
+		bean.setConfigLocations("classpath*:cache.*.properties");
+		bean.afterPropertiesSet();
+
+		return bean.getObject();
 	}
 
 	@Bean
