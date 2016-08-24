@@ -6,7 +6,11 @@ import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.PersistenceConfiguration;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.syaku.util.PathMatchingResourceResolver;
 
@@ -17,8 +21,11 @@ import java.util.Properties;
  * @author Seok Kyun. Choi. 최석균 (Syaku)
  * @site http://syaku.tistory.com
  * @since 16. 7. 28.
+ * @see org.springframework.cache.ehcache.EhCacheManagerFactoryBean
  */
-public class EhcacheFactoryBean extends EhCacheManagerFactoryBean {
+public class EhCacheManagerFactoryBean implements FactoryBean<CacheManager>, InitializingBean, DisposableBean {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	private String[] configLocations;
 
 	private String cacheManagerName = "cacheManager";
@@ -31,18 +38,29 @@ public class EhcacheFactoryBean extends EhCacheManagerFactoryBean {
 
 	private boolean locallyManaged = true;
 
-	public void setConfigLocation(Resource configLocation) {
-	}
 
-	public void setConfigLocations(String configLocations) {
-		if (configLocations != null) {
-			this.configLocations = configLocations.split(",");
+	public void setConfigLocation(String configLocation) {
+		if (configLocation != null) {
+			this.configLocations = configLocation.split(",");
 		}
 	}
 
 	public void setConfigLocations(String[] configLocations) {
 		this.configLocations = configLocations;
 	}
+
+	public void setCacheManagerName(String cacheManagerName) {
+		this.cacheManagerName = cacheManagerName;
+	}
+
+	public void setAcceptExisting(boolean acceptExisting) {
+		this.acceptExisting = acceptExisting;
+	}
+
+	public void setShared(boolean shared) {
+		this.shared = shared;
+	}
+
 
 	@Override
 	public void afterPropertiesSet() throws CacheException {
@@ -75,7 +93,7 @@ public class EhcacheFactoryBean extends EhCacheManagerFactoryBean {
 					boolean eternal = properties.getProperty("eternal", "false").equals("true") ? true : false;
 					int timeToIdleSeconds = Integer.parseInt(properties.getProperty("timeToIdleSeconds", "0"));
 					int timeToLiveSeconds = Integer.parseInt(properties.getProperty("timeToLiveSeconds", "0"));
-					boolean loggin = properties.getProperty("loggin", "false").equals("true") ? true : false;
+					boolean logging = properties.getProperty("logging", "false").equals("true") ? true : false;
 
 					cacheConfiguration.setName(cacheName);
 					cacheConfiguration.setMemoryStoreEvictionPolicy(memoryStoreEvictionPolicy);
@@ -83,7 +101,7 @@ public class EhcacheFactoryBean extends EhCacheManagerFactoryBean {
 					cacheConfiguration.setEternal(eternal);
 					cacheConfiguration.setTimeToIdleSeconds(timeToIdleSeconds);
 					cacheConfiguration.setTimeToLiveSeconds(timeToLiveSeconds);
-					cacheConfiguration.setLogging(loggin);
+					cacheConfiguration.setLogging(logging);
 					cacheConfiguration.persistence(new PersistenceConfiguration().strategy(PersistenceConfiguration.Strategy.LOCALTEMPSWAP));
 
 					configuration.addCache(cacheConfiguration);
@@ -122,4 +140,30 @@ public class EhcacheFactoryBean extends EhCacheManagerFactoryBean {
 			this.cacheManager = new CacheManager(configuration);
 		}
 	}
+
+
+	@Override
+	public CacheManager getObject() {
+		return this.cacheManager;
+	}
+
+	@Override
+	public Class<? extends CacheManager> getObjectType() {
+		return (this.cacheManager != null ? this.cacheManager.getClass() : CacheManager.class);
+	}
+
+	@Override
+	public boolean isSingleton() {
+		return true;
+	}
+
+
+	@Override
+	public void destroy() {
+		if (this.locallyManaged) {
+			logger.info("Shutting down EhCache CacheManager");
+			this.cacheManager.shutdown();
+		}
+	}
+
 }

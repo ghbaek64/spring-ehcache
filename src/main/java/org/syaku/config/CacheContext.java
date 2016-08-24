@@ -1,6 +1,5 @@
 package org.syaku.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
@@ -14,8 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.stereotype.Service;
-
-import java.util.Properties;
 
 /**
  * @author Seok Kyun. Choi. 최석균 (Syaku)
@@ -46,8 +43,8 @@ public class CacheContext implements CachingConfigurer {
 		return net.sf.ehcache.CacheManager.newInstance(config);
 		*/
 		System.out.println("ewqewqewqewqewqe==================");
-		EhcacheFactoryBean bean = new EhcacheFactoryBean();
-		bean.setConfigLocations("classpath*:cache.*.properties");
+		EhCacheManagerFactoryBean bean = new EhCacheManagerFactoryBean();
+		bean.setConfigLocation("classpath*:cache.*.properties");
 		bean.afterPropertiesSet();
 
 		return bean.getObject();

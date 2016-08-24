@@ -12,13 +12,14 @@ import org.syaku.config.XmlCacheContext;
 import org.syaku.service.EhcacheAnnotationService;
 
 /**
+ * ehcache.xml 이용한 테스트
  * @author Seok Kyun. Choi. 최석균 (Syaku)
  * @site http://syaku.tistory.com
  * @since 16. 7. 22.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { XmlCacheContext.class })
-public class EhcacheXmlTest {
+public class EhcacheXmlConfigTest {
 
 	@Autowired private CacheManager cacheManager;
 	@Autowired private EhcacheAnnotationService ehcacheService;

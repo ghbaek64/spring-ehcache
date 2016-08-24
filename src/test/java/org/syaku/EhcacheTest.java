@@ -1,32 +1,25 @@
 package org.syaku;
 
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.syaku.config.CacheContext;
 import org.syaku.service.EhcacheAnnotationService;
 
 /**
  * @author Seok Kyun. Choi. 최석균 (Syaku)
  * @site http://syaku.tistory.com
- * @since 16. 7. 22.
+ * @since 16. 8. 24.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { CacheContext.class })
 public class EhcacheTest {
 
-	@Autowired private CacheManager cacheManager;
+	@Autowired
+	private CacheManager cacheManager;
 	@Autowired private EhcacheAnnotationService ehcacheService;
 
 	@Test
-	@Ignore
 	public void live() throws InterruptedException {
-		Cache cache = cacheManager.getCache("test");
+		Cache cache = cacheManager.getCache("sample");
 
 		// 캐시에 title 엘리먼트 추가
 		cache.put("title", "ehcache testing...");
@@ -51,7 +44,6 @@ public class EhcacheTest {
 	}
 
 	@Test
-	@Ignore
 	public void annotation() throws InterruptedException {
 		// 현재 시간을 캐시에 저장한다.
 		System.out.println("#1 ==========>" + ehcacheService.getDate());
@@ -78,7 +70,6 @@ public class EhcacheTest {
 	}
 
 	@Test
-	//@Ignore
 	public void annotationKey() throws InterruptedException {
 		// 현재시간을 캐시에 키 이름을 getDateKey로 하여 저장한다.
 		System.out.println("#1 ==========>" + ehcacheService.getDateKey());
